@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Teoría Musical — Curso Interactivo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1209;
+  --parchment: #f5ede0;
+  --gold: #c8963e;
+  --gold-light: #e8b96a;
+  --rust: #8b3a2a;
+  --cream: #fdf6ec;
+  --shadow: rgba(26,18,9,0.12);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { scroll-behavior:smooth; }
+body { background:var(--parchment); color:var(--ink); font-family:'Fraunces',Georgia,serif; overflow-x:hidden; }
+body::before {
+  content:''; position:fixed; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:9999; opacity:0.35;
+}
+header { text-align:center; padding:64px 24px 48px; position:relative; border-bottom:2px solid var(--gold); }
+header::after { content:'𝄞'; position:absolute; right:32px; top:24px; font-size:90px; color:var(--gold); opacity:0.12; line-height:1; }
+.subtitle { font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--gold); margin-bottom:14px; }
+h1 { font-family:'Playfair Display',serif; font-size:clamp(2.1rem,6vw,4.2rem); font-weight:900; line-height:1.05; color:var(--ink); margin-bottom:18px; }
+h1 em { font-style:italic; color:var(--rust); }
+.intro-text { max-width:540px; margin:0 auto; font-size:1rem; font-weight:300; line-height:1.8; color:#4a3f32; }
+nav { position:sticky; top:0; z-index:100; background:var(--ink); padding:0 12px; display:flex; overflow-x:auto; scrollbar-width:none; border-bottom:3px solid var(--gold); }
+nav::-webkit-scrollbar { display:none; }
+nav a { font-family:'DM Mono',monospace; font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:#9a8870; text-decoration:none; padding:13px 14px; white-space:nowrap; border-bottom:3px solid transparent; margin-bottom:-3px; transition:color .2s,border-color .2s; }
+nav a:hover, nav a.active { color:var(--gold-light); border-bottom-color:var(--gold); }
+section { max-width:860px; margin:0 auto; padding:60px 22px; border-bottom:1px solid rgba(200,150,62,.2); opacity:0; transform:translateY(26px); transition:opacity .6s ease,transform .6s ease; }
+section.visible { opacity:1; transform:none; }
+.sec-num { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.3em; color:var(--gold); text-transform:uppercase; margin-bottom:10px; }
+h2 { font-family:'Playfair Display',serif; font-size:clamp(1.7rem,4vw,2.7rem); font-weight:700; line-height:1.1; margin-bottom:20px; color:var(--ink); }
+h2 span { display:block; font-size:0.42em; font-style:italic; color:var(--rust); font-weight:400; margin-top:4px; }
+p { font-size:0.97rem; line-height:1.85; color:#3d3020; margin-bottom:16px; font-weight:300; }
+strong { font-weight:600; }
+.piano-wrap { margin:28px 0; overflow-x:auto; padding-bottom:6px; -webkit-overflow-scrolling:touch; }
+.piano-inner { display:flex; position:relative; height:128px; width:max-content; margin:0 auto; filter:drop-shadow(0 5px 14px rgba(0,0,0,.28)); }
+.key { position:relative; cursor:pointer; user-select:none; touch-action:manipulation; }
+.wk { width:44px; height:128px; background:linear-gradient(180deg,#fdfaf5,#e8dcc8); border:1.5px solid #b8a890; border-top:none; border-radius:0 0 5px 5px; display:flex; align-items:flex-end; justify-content:center; padding-bottom:7px; box-shadow:inset -1px 0 0 rgba(0,0,0,.05),0 3px 6px rgba(0,0,0,.15); transition:background .09s; }
+.wk:active,.wk.pl { background:linear-gradient(180deg,#e8c97a,#c8963e) !important; }
+.bk { position:absolute; width:27px; height:78px; background:linear-gradient(180deg,#2a1f14,#1a1209); border-radius:0 0 3px 3px; z-index:2; top:0; display:flex; align-items:flex-end; justify-content:center; padding-bottom:5px; box-shadow:2px 4px 8px rgba(0,0,0,.5); transition:background .09s; }
+.bk:active,.bk.pl { background:linear-gradient(180deg,#8b6030,#c8963e) !important; }
+.klbl { font-family:'DM Mono',monospace; font-size:0.52rem; font-weight:500; pointer-events:none; }
+.wk .klbl { color:#6b5840; }
+.bk .klbl { color:#c8963e; }
+.wk.hl { background:linear-gradient(180deg,#b8dfa0,#6aaf4e) !important; }
+.bk.hl { background:linear-gradient(180deg,#4a8a30,#2a5a18) !important; }
+.wk.rt { background:linear-gradient(180deg,#e8c97a,#c8963e) !important; }
+.bk.rt { background:linear-gradient(180deg,#c8963e,#8b6030) !important; }
+.tap-hint { text-align:center; font-family:'DM Mono',monospace; font-size:0.6rem; color:var(--gold); letter-spacing:.1em; margin-top:-14px; margin-bottom:18px; }
+.intervals-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(136px,1fr)); gap:9px; margin:24px 0; }
+.iv-card { background:var(--cream); border:1.5px solid rgba(200,150,62,.25); border-radius:8px; padding:13px 10px; text-align:center; cursor:pointer; transition:all .18s; touch-action:manipulation; }
+.iv-card:active { border-color:var(--gold); transform:translateY(-2px); box-shadow:0 4px 14px var(--shadow); }
+.iv-n { font-family:'DM Mono',monospace; font-size:1.5rem; font-weight:500; color:var(--gold); line-height:1; margin-bottom:3px; }
+.iv-name { font-family:'Playfair Display',serif; font-size:0.78rem; font-weight:600; color:var(--ink); margin-bottom:3px; }
+.iv-ex { font-family:'DM Mono',monospace; font-size:0.58rem; color:var(--rust); }
+.scale-sel { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px; }
+.rb { font-family:'DM Mono',monospace; font-size:0.65rem; padding:7px 11px; border:1.5px solid rgba(200,150,62,.4); background:transparent; color:var(--ink); border-radius:4px; cursor:pointer; transition:all .18s; touch-action:manipulation; min-height:36px; }
+.rb:hover,.rb.act { background:var(--gold); border-color:var(--gold); color:var(--ink); font-weight:500; }
+.sf { display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin:20px 0; }
+.sb { display:flex; flex-direction:column; align-items:center; gap:3px; }
+.sn { font-family:'Playfair Display',serif; font-size:0.85rem; font-weight:700; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid var(--gold); background:var(--cream); color:var(--ink); font-size:0.75rem; }
+.sn.sr { background:var(--gold); color:var(--ink); }
+.sl { font-family:'DM Mono',monospace; font-size:0.52rem; color:var(--rust); }
+.ssp { font-family:'DM Mono',monospace; font-size:0.6rem; color:var(--gold); opacity:.6; margin-bottom:14px; padding:0 2px; }
+.circle-wrap { display:flex; flex-direction:column; align-items:center; gap:22px; margin:28px 0; }
+#csvg { filter:drop-shadow(0 5px 22px rgba(0,0,0,.22)); max-width:100%; height:auto; }
+.cinfo { background:var(--cream); border:1.5px solid var(--gold); border-radius:12px; padding:18px 24px; text-align:center; width:100%; max-width:320px; }
+.ckey { font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:900; color:var(--ink); margin-bottom:3px; }
+.cacc { font-family:'DM Mono',monospace; font-size:0.62rem; color:var(--gold); letter-spacing:.15em; text-transform:uppercase; margin-bottom:8px; }
+.cnotes { font-family:'DM Mono',monospace; font-size:0.68rem; color:#6b5840; letter-spacing:.07em; }
+.chords-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; margin:24px 0; }
+.cc { background:var(--cream); border:1.5px solid rgba(200,150,62,.2); border-radius:10px; padding:16px; cursor:pointer; transition:all .18s; touch-action:manipulation; }
+.cc:active { border-color:var(--gold); box-shadow:0 4px 18px var(--shadow); transform:translateY(-2px); }
+.cn { font-family:'DM Mono',monospace; font-size:1rem; font-weight:500; color:var(--rust); margin-bottom:3px; }
+.ct { font-family:'Fraunces',serif; font-size:0.8rem; color:var(--ink); margin-bottom:9px; font-style:italic; }
+.cp { display:flex; gap:5px; flex-wrap:wrap; }
+.pill { font-family:'DM Mono',monospace; font-size:0.6rem; padding:3px 7px; border-radius:9px; border:1px solid rgba(200,150,62,.4); color:var(--ink); }
+.pill.r { background:var(--gold); border-color:var(--gold); font-weight:600; }
+.callout { background:rgba(200,150,62,.08); border:1px solid rgba(200,150,62,.32); border-radius:10px; padding:18px 22px; margin:20px 0; position:relative; }
+.callout::before { content:attr(data-icon); position:absolute; top:-12px; left:18px; background:var(--parchment); padding:0 5px; font-size:.88rem; }
+.callout p { margin:0; font-size:.9rem; color:#4a3f32; }
+.formula { font-family:'DM Mono',monospace; background:var(--ink); color:var(--gold-light); padding:16px 22px; border-radius:8px; margin:18px 0; font-size:0.78rem; letter-spacing:.07em; overflow-x:auto; -webkit-overflow-scrolling:touch; line-height:1.9; white-space:pre; }
+.ddark { background:var(--ink); color:var(--parchment); border-radius:14px; padding:28px 24px; margin:24px 0; }
+.dlabel { font-family:'DM Mono',monospace; font-size:0.58rem; letter-spacing:.27em; color:var(--gold); text-transform:uppercase; margin-bottom:14px; }
+.dbig { font-family:'Playfair Display',serif; font-size:2.8rem; font-weight:900; color:var(--gold-light); margin-bottom:20px; }
+.dstep { background:rgba(255,255,255,.05); border:1px solid rgba(200,150,62,.22); border-radius:10px; padding:16px 18px; margin-bottom:12px; opacity:0; transform:translateY(10px); transition:opacity .38s,transform .38s,border-color .2s; }
+.dstep.rv { opacity:1; transform:none; }
+.dsym { font-family:'DM Mono',monospace; font-size:1.4rem; font-weight:500; color:var(--gold); margin-bottom:5px; }
+.dtitle { font-family:'Playfair Display',serif; font-size:.97rem; color:var(--gold-light); margin-bottom:4px; }
+.ddesc { font-size:.85rem; color:#c8b898; line-height:1.65; font-weight:300; }
+.ddesc strong { color:var(--gold-light); font-weight:600; }
+.rbtn { font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:.12em; text-transform:uppercase; background:var(--gold); color:var(--ink); border:none; border-radius:6px; padding:11px 20px; cursor:pointer; margin-top:16px; transition:all .18s; touch-action:manipulation; display:block; width:100%; }
+.rbtn:hover { background:var(--gold-light); }
+.rbtn:disabled { background:#6b5840; color:#3a2f22; cursor:default; }
+.rbox { background:rgba(200,150,62,.15); border-left:3px solid var(--gold); padding:13px 16px; border-radius:0 8px 8px 0; margin-top:14px; font-size:.87rem; line-height:1.7; color:#e8d8b8; display:none; }
+.mex { margin-top:10px; padding:14px 18px; background:rgba(255,255,255,.04); border-radius:8px; display:none; }
+.mex .fd { font-family:'DM Mono',monospace; font-size:0.74rem; color:var(--gold-light); line-height:2.1; letter-spacing:.04em; white-space:pre; }
+footer { text-align:center; padding:44px 22px; background:var(--ink); color:#6b5840; font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:.14em; }
+footer span { color:var(--gold); }
+@media(max-width:420px){ section{padding:44px 16px;} .ddark{padding:22px 16px;} .dbig{font-size:2.1rem;} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="subtitle">Curso Interactivo</div>
+  <h1>El Lenguaje<br>de la <em>Música</em></h1>
+  <p class="intro-text">Desde la primera nota hasta nombrar un acorde complejo — un viaje claro por los fundamentos de la teoría musical.</p>
+</header>
+
+<nav id="main-nav">
+  <a href="#notas" class="active">I. Notas</a>
+  <a href="#intervalos">II. Intervalos</a>
+  <a href="#escalas">III. Escalas</a>
+  <a href="#escala-mayor">IV. Escala Mayor</a>
+  <a href="#circulo">V. Círculo</a>
+  <a href="#acordes">VI. Acordes</a>
+  <a href="#csus4">VII. Nombres</a>
+</nav>
+
+<!-- ══ I. NOTAS ══ -->
+<section id="notas">
+  <div class="sec-num">Capítulo I</div>
+  <h2>Notas Musicales <span>Los ladrillos de toda música</span></h2>
+  <p>En la música occidental, todo se construye con <strong>12 notas</strong>. Solo 12. Con ellas se escribió Bach, los Beatles, y todo lo que existe entre ellos.</p>
+  <p>En el teclado las ves claramente: las teclas <strong>blancas</strong> son las notas naturales (Do, Re, Mi, Fa, Sol, La, Si) y las teclas <strong>negras</strong> son las notas alteradas. Cada tecla negra tiene dos nombres según el contexto.</p>
+  <div class="piano-wrap"><div class="piano-inner" id="piano-main"></div></div>
+  <p class="tap-hint">↑ Toca cualquier tecla para escucharla</p>
+  <div class="callout" data-icon="🎵">
+    <p>Las notas negras se llaman <strong>sostenidos (♯)</strong> cuando subimos un semitono, o <strong>bemoles (♭)</strong> cuando bajamos. Do♯ y Re♭ son la <em>misma tecla</em> — dos nombres para el mismo sonido. Esto se llama <strong>enharmonía</strong>.</p>
+  </div>
+  <p>Las 12 notas en orden cromático ascendente:</p>
+  <div class="formula">Do · Do♯/Re♭ · Re · Re♯/Mi♭ · Mi · Fa · Fa♯/Sol♭ · Sol · Sol♯/La♭ · La · La♯/Si♭ · Si</div>
+</section>
+
+<!-- ══ II. INTERVALOS ══ -->
+<section id="intervalos">
+  <div class="sec-num">Capítulo II</div>
+  <h2>Intervalos <span>La distancia entre notas</span></h2>
+  <p>Un <strong>intervalo</strong> es la distancia entre dos notas, medida en <em>semitonos</em> — el paso mínimo posible entre una tecla y la inmediatamente siguiente en el piano.</p>
+  <p>Dos semitonos forman un <strong>tono</strong>. Estas distancias tienen nombres clásicos. Al tocar cada tarjeta escucharás Do junto con la nota destino:</p>
+  <div class="intervals-grid" id="ig"></div>
+  <p class="tap-hint">↑ Toca cualquier intervalo para escucharlo</p>
+  <div class="callout" data-icon="👂">
+    <p>Cada intervalo tiene una <strong>personalidad sonora única</strong>. La tercera mayor suena alegre y estable; la tercera menor, melancólica; el tritono (6 semitonos) crea tensión máxima. El oído los aprende con la práctica.</p>
+  </div>
+</section>
+
+<!-- ══ III. ESCALAS ══ -->
+<section id="escalas">
+  <div class="sec-num">Capítulo III</div>
+  <h2>Las Escalas <span>El mapa sonoro de una tonalidad</span></h2>
+  <p>Una <strong>escala</strong> es una selección ordenada de notas que define el universo sonoro de una pieza. De las 12 notas disponibles, una escala típica elige <strong>7</strong>.</p>
+  <p>Si la música fuera un idioma, la escala sería su alfabeto particular. Cuando una canción está "en Do mayor", sus melodías y acordes se construyen principalmente con esas 7 notas.</p>
+  <div class="callout" data-icon="🗺️">
+    <p>Existen docenas de escalas: mayor, menor natural, menor armónica, pentatónica, blues, modos gregorianos… Cada una tiene un carácter emocional distinto. Pero todas comparten el mismo principio: son una <strong>fórmula de intervalos</strong> repetible desde cualquier nota.</p>
+  </div>
+</section>
+
+<!-- ══ IV. ESCALA MAYOR ══ -->
+<section id="escala-mayor">
+  <div class="sec-num">Capítulo IV</div>
+  <h2>La Escala Mayor <span>La fórmula T-T-S-T-T-T-S</span></h2>
+  <p>La escala mayor es la columna vertebral de la música occidental. Es la secuencia <em>Do-Re-Mi-Fa-Sol-La-Si</em> que todos conocemos. Su fórmula de intervalos es siempre la misma, sin importar desde qué nota empieces:</p>
+  <div class="formula">T  –  T  –  S  –  T  –  T  –  T  –  S
+(2) (2) (1) (2) (2) (2) (1)  semitonos</div>
+  <p>Elige una nota raíz y la escala se construye automáticamente:</p>
+  <div class="scale-sel" id="scale-sel"></div>
+  <div class="sf" id="sf"></div>
+  <div class="piano-wrap"><div class="piano-inner" id="piano-scale"></div></div>
+  <div class="callout" data-icon="🔑">
+    <p>¿Por qué algunas escalas necesitan sostenidos o bemoles? Porque la fórmula T-T-S-T-T-T-S debe cumplirse <em>exactamente</em>. En Sol mayor, el 7° grado debe ser Fa♯ (no Fa♮) para que el paso sea un semitono y la escala suene correctamente.</p>
+  </div>
+</section>
+
+<!-- ══ V. CÍRCULO ══ -->
+<section id="circulo">
+  <div class="sec-num">Capítulo V</div>
+  <h2>El Círculo de Quintas <span>El mapa de todas las tonalidades</span></h2>
+  <p>El círculo de quintas organiza las 12 tonalidades mayores. Cada tonalidad está separada de la siguiente por el intervalo de una <strong>quinta justa</strong> (7 semitonos).</p>
+  <p>Su utilidad práctica: <strong>en sentido horario se añade un sostenido; en sentido antihorario, un bemol.</strong> Do, sin alteraciones, está en la cima.</p>
+  <div class="circle-wrap">
+    <svg id="csvg" width="300" height="300" viewBox="0 0 300 300"></svg>
+    <div class="cinfo">
+      <div class="ckey" id="ck-name">Do</div>
+      <div class="cacc" id="ck-acc">Sin alteraciones</div>
+      <div class="cnotes" id="ck-notes">Do · Re · Mi · Fa · Sol · La · Si</div>
+    </div>
+  </div>
+  <div class="callout" data-icon="🧭">
+    <p>Las tonalidades <strong>adyacentes</strong> comparten 6 de sus 7 notas — son vecinas armónicamente. Las tonalidades <strong>opuestas</strong> (a las 6 en punto) comparten muy pocas notas y suenan muy contrastantes.</p>
+  </div>
+</section>
+
+<!-- ══ VI. ACORDES ══ -->
+<section id="acordes">
+  <div class="sec-num">Capítulo VI</div>
+  <h2>Los Acordes <span>Notas de la escala que suenan juntas</span></h2>
+  <p>Un <strong>acorde</strong> es la combinación de tres o más notas tocadas simultáneamente. Los acordes básicos (tríadas) se construyen apilando <em>terceras</em>: tomamos una nota de la escala, saltamos la siguiente, tomamos la siguiente — y así.</p>
+  <p>De la escala de Do mayor podemos construir 7 tríadas. Su tipo depende de los intervalos exactos entre sus notas:</p>
+  <div class="formula">Tríada mayor   = 3ª mayor (4 st) + 5ª justa (7 st desde la raíz)
+Tríada menor   = 3ª menor (3 st) + 5ª justa (7 st desde la raíz)
+Tríada dism.   = 3ª menor (3 st) + 5ª disminuida (6 st desde la raíz)</div>
+  <div class="chords-grid" id="cg"></div>
+  <p class="tap-hint">↑ Toca cualquier acorde para escucharlo</p>
+  <div class="callout" data-icon="🏗️">
+    <p>En toda tonalidad mayor: los grados I, IV y V generan acordes <strong>mayores</strong>; los grados II, III y VI generan acordes <strong>menores</strong>; el grado VII genera un acorde <strong>disminuido</strong>. Esta distribución es siempre la misma.</p>
+  </div>
+</section>
+
+<!-- ══ VII. NOMBRES DE ACORDES ══ -->
+<section id="csus4">
+  <div class="sec-num">Capítulo VII</div>
+  <h2>¿Por qué se llaman así? <span>El código detrás del nombre de un acorde</span></h2>
+  <p>Los nombres de acordes son instrucciones comprimidas. Cada símbolo significa algo preciso. Vamos a descifrarlos uno por uno — de lo más simple a lo más complejo. Toca el botón de cada acorde para escucharlo.</p>
+
+  <!-- C MAYOR -->
+  <div class="ddark" style="margin-bottom:20px;">
+    <div class="dlabel">Acorde 1 de 5</div>
+    <div class="dbig" id="dbig-1">C</div>
+    <div class="dstep rv">
+      <div class="dsym">C</div>
+      <div class="dtitle">La nota raíz — siempre es una letra</div>
+      <div class="ddesc">En la notación anglosajona (usada internacionalmente), las notas se escriben con letras: <strong>C=Do · D=Re · E=Mi · F=Fa · G=Sol · A=La · B=Si</strong>. La letra indica la nota más grave del acorde, la raíz sobre la que todo se construye.</div>
+    </div>
+    <div class="dstep rv">
+      <div class="dsym">(nada más)</div>
+      <div class="dtitle">Cuando no hay sufijo, el acorde es mayor</div>
+      <div class="ddesc">Un nombre de acorde sin ningún símbolo adicional siempre es una <strong>tríada mayor</strong>: raíz + 3ª mayor (4 semitonos) + 5ª justa (7 semitonos). <strong>C = Do – Mi – Sol</strong>. Suena brillante, estable, "feliz".</div>
+    </div>
+    <button class="rbtn" style="margin-top:8px;" onclick="playChord([0,4,7],true)">▶ Escuchar C (Do mayor)</button>
+  </div>
+
+  <!-- C MENOR -->
+  <div class="ddark" style="margin-bottom:20px;">
+    <div class="dlabel">Acorde 2 de 5</div>
+    <div class="dbig">Cm</div>
+    <div class="dstep rv">
+      <div class="dsym">C</div>
+      <div class="dtitle">Misma raíz: Do</div>
+      <div class="ddesc">La raíz no cambia — seguimos en Do. Lo que cambia es lo que viene después.</div>
+    </div>
+    <div class="dstep rv">
+      <div class="dsym">m</div>
+      <div class="dtitle">"m" de minor — acorde menor</div>
+      <div class="ddesc">La letra <strong>m</strong> (o a veces <strong>min</strong>) indica que la tercera se reduce un semitono: en vez de 4 semitonos (3ª mayor), ahora son 3 semitonos (3ª menor). La quinta no cambia. <strong>Cm = Do – Mi♭ – Sol</strong>. Ese semitono de diferencia transforma el color de brillante a oscuro y melancólico.</div>
+    </div>
+    <button class="rbtn" style="margin-top:8px;" onclick="playChord([0,3,7],true)">▶ Escuchar Cm (Do menor)</button>
+  </div>
+
+  <!-- C7 -->
+  <div class="ddark" style="margin-bottom:20px;">
+    <div class="dlabel">Acorde 3 de 5</div>
+    <div class="dbig">C7</div>
+    <div class="dstep rv">
+      <div class="dsym">C</div>
+      <div class="dtitle">Raíz: Do. Sin "m" → sigue siendo mayor</div>
+      <div class="ddesc">La base es un acorde mayor normal: Do – Mi – Sol.</div>
+    </div>
+    <div class="dstep rv">
+      <div class="dsym">7</div>
+      <div class="dtitle">Se añade la séptima menor</div>
+      <div class="ddesc">El número <strong>7</strong> solo (sin "maj") siempre indica la <strong>séptima menor</strong>: 10 semitonos sobre la raíz. En Do eso es <strong>Si♭</strong>. Resultado: <strong>C7 = Do – Mi – Sol – Si♭</strong>. Este acorde de cuatro notas tiene una tensión característica que pide resolver — es el corazón del blues y el jazz.</div>
+    </div>
+    <button class="rbtn" style="margin-top:8px;" onclick="playChord([0,4,7,10],true)">▶ Escuchar C7</button>
+  </div>
+
+  <!-- CSUS2 -->
+  <div class="ddark" style="margin-bottom:20px;">
+    <div class="dlabel">Acorde 4 de 5</div>
+    <div class="dbig">Csus2</div>
+    <div class="dstep rv">
+      <div class="dsym">sus</div>
+      <div class="dtitle">Suspended — la tercera desaparece</div>
+      <div class="ddesc">Como en todo acorde <em>sus</em>, la tercera se <strong>elimina y se reemplaza</strong> por otro intervalo. Sin tercera el acorde no es mayor ni menor — queda suspendido, ambiguo, abierto.</div>
+    </div>
+    <div class="dstep rv">
+      <div class="dsym">2</div>
+      <div class="dtitle">La segunda mayor reemplaza a la tercera</div>
+      <div class="ddesc">La tercera se sustituye por la <strong>segunda mayor</strong> (2 semitonos sobre la raíz). En Do, eso es <strong>Re</strong>. Resultado: <strong>Csus2 = Do – Re – Sol</strong>. Suena abierto y flotante — muy usado en música ambient, pop moderno y guitarras con afinación abierta.</div>
+    </div>
+    <button class="rbtn" style="margin-top:8px;" onclick="playChord([0,2,7],true)">▶ Escuchar Csus2</button>
+  </div>
+
+  <!-- CSUS4 -->
+  <div class="ddark">
+    <div class="dlabel">Acorde 5 de 5</div>
+    <div class="dbig">Csus4</div>
+    <div class="dstep rv">
+      <div class="dsym">sus</div>
+      <div class="dtitle">De nuevo: la tercera desaparece</div>
+      <div class="ddesc">Igual que en Csus2, la tercera se elimina. La diferencia está en qué nota la reemplaza.</div>
+    </div>
+    <div class="dstep rv">
+      <div class="dsym">4</div>
+      <div class="dtitle">La cuarta justa reemplaza a la tercera</div>
+      <div class="ddesc">Ahora la tercera se sustituye por la <strong>cuarta justa</strong> (5 semitonos sobre la raíz). En Do, eso es <strong>Fa</strong>. Resultado: <strong>Csus4 = Do – Fa – Sol</strong>. Comparado con C mayor (Do–Mi–Sol), el Mi sube un semitono a Fa. Suena más tenso que el sus2 — pide resolver bajando ese Fa de vuelta a Mi.</div>
+    </div>
+    <div class="dstep rv">
+      <div class="dsym">Csus4 → C</div>
+      <div class="dtitle">La resolución natural</div>
+      <div class="ddesc">El sus4 casi siempre resuelve al acorde mayor: <strong>Csus4 → C</strong>. El Fa desciende un semitono a Mi y la tensión se libera. Escúchalo:</div>
+    </div>
+    <button class="rbtn" style="margin-top:8px;" id="rbtn-sus4">▶ Escuchar Csus4 → C (resolución)</button>
+  </div>
+
+  <div class="callout" data-icon="🎯">
+    <p>El patrón es siempre el mismo: <strong>letra</strong> (raíz) + <strong>calidad</strong> (mayor si nada, m si menor) + <strong>extensiones</strong> (7, sus2, sus4, maj7, add9…). Una vez que reconoces los bloques, cualquier cifrado se vuelve legible.</p>
+  </div>
+</section>
+
+<footer><p>Teoría Musical Interactiva · <span>El Lenguaje de la Música</span></p></footer>
+
+<script>
+// ════════════════════════════════════════
+// AUDIO ENGINE
+// ════════════════════════════════════════
+let AC = null;
+function ac() {
+  if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+  if (AC.state === 'suspended') AC.resume();
+  return AC;
+}
+const FREQS = [261.63,277.18,293.66,311.13,329.63,349.23,369.99,392.00,415.30,440.00,466.16,493.88];
+
+function playN(idx, dur=1.3, delay=0, octave=0) {
+  const ctx = ac(), t = ctx.currentTime + delay;
+  const freq = FREQS[((idx % 12) + 12) % 12] * Math.pow(2, octave);
+
+  const o1 = ctx.createOscillator(), g1 = ctx.createGain();
+  o1.type = 'triangle'; o1.frequency.value = freq;
+  g1.gain.setValueAtTime(0, t);
+  g1.gain.linearRampToValueAtTime(0.42, t + 0.008);
+  g1.gain.exponentialRampToValueAtTime(0.15, t + 0.12);
+  g1.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  o1.connect(g1); g1.connect(ctx.destination);
+  o1.start(t); o1.stop(t + dur);
+
+  const o2 = ctx.createOscillator(), g2 = ctx.createGain();
+  o2.type = 'sine'; o2.frequency.value = freq * 2;
+  g2.gain.setValueAtTime(0.12, t); g2.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  o2.connect(g2); g2.connect(ctx.destination);
+  o2.start(t); o2.stop(t + dur);
+}
+
+function playChord(notes, arp=false) {
+  notes.forEach((n,i) => playN(n, 1.9, arp ? i*0.07 : 0));
+}
+
+// ════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════
+const ES = ['Do','Do♯','Re','Re♯','Mi','Fa','Fa♯','Sol','Sol♯','La','La♯','Si'];
+
+// Escala mayor de cada raíz con nombres ortográficamente correctos
+const SCALES = {
+  0:  {root:'Do',   n:['Do','Re','Mi','Fa','Sol','La','Si']},
+  1:  {root:'Do♯',  n:['Do♯','Re♯','Mi♯','Fa♯','Sol♯','La♯','Si♯']},
+  2:  {root:'Re',   n:['Re','Mi','Fa♯','Sol','La','Si','Do♯']},
+  3:  {root:'Mi♭',  n:['Mi♭','Fa','Sol','La♭','Si♭','Do','Re']},
+  4:  {root:'Mi',   n:['Mi','Fa♯','Sol♯','La','Si','Do♯','Re♯']},
+  5:  {root:'Fa',   n:['Fa','Sol','La','Si♭','Do','Re','Mi']},
+  6:  {root:'Fa♯',  n:['Fa♯','Sol♯','La♯','Si','Do♯','Re♯','Mi♯']},
+  7:  {root:'Sol',  n:['Sol','La','Si','Do','Re','Mi','Fa♯']},
+  8:  {root:'La♭',  n:['La♭','Si♭','Do','Re♭','Mi♭','Fa','Sol']},
+  9:  {root:'La',   n:['La','Si','Do♯','Re','Mi','Fa♯','Sol♯']},
+  10: {root:'Si♭',  n:['Si♭','Do','Re','Mi♭','Fa','Sol','La']},
+  11: {root:'Si',   n:['Si','Do♯','Re♯','Mi','Fa♯','Sol♯','La♯']},
+};
+
+const NAME2SEMI = {
+  'Do':0,'Do♯':1,'Do♭':11,
+  'Re♭':1,'Re':2,'Re♯':3,
+  'Mi♭':3,'Mi':4,'Mi♯':5,
+  'Fa♭':4,'Fa':5,'Fa♯':6,
+  'Sol♭':6,'Sol':7,'Sol♯':8,
+  'La♭':8,'La':9,'La♯':10,
+  'Si♭':10,'Si':11,'Si♯':0,
+};
+function n2s(name) { return NAME2SEMI[name] !== undefined ? NAME2SEMI[name] : 0; }
+
+const GAPS = [2,2,1,2,2,2,1]; // semitonos entre grados de la escala mayor
+
+const IVDATA = [
+  {st:1,  name:'Semitono',  ex:'Do → Do♯'},
+  {st:2,  name:'Tono',      ex:'Do → Re'},
+  {st:3,  name:'3ª menor',  ex:'Do → Mi♭'},
+  {st:4,  name:'3ª mayor',  ex:'Do → Mi'},
+  {st:5,  name:'4ª justa',  ex:'Do → Fa'},
+  {st:6,  name:'Tritono',   ex:'Do → Fa♯'},
+  {st:7,  name:'5ª justa',  ex:'Do → Sol'},
+  {st:8,  name:'6ª menor',  ex:'Do → Sol♯'},
+  {st:9,  name:'6ª mayor',  ex:'Do → La'},
+  {st:10, name:'7ª menor',  ex:'Do → Si♭'},
+  {st:11, name:'7ª mayor',  ex:'Do → Si'},
+  {st:12, name:'Octava',    ex:'Do → Do'},
+];
+
+const CIRCLE = [
+  {k:'Do',       sh:0,fl:0, notes:'Do · Re · Mi · Fa · Sol · La · Si'},
+  {k:'Sol',      sh:1,fl:0, notes:'Sol · La · Si · Do · Re · Mi · Fa♯'},
+  {k:'Re',       sh:2,fl:0, notes:'Re · Mi · Fa♯ · Sol · La · Si · Do♯'},
+  {k:'La',       sh:3,fl:0, notes:'La · Si · Do♯ · Re · Mi · Fa♯ · Sol♯'},
+  {k:'Mi',       sh:4,fl:0, notes:'Mi · Fa♯ · Sol♯ · La · Si · Do♯ · Re♯'},
+  {k:'Si',       sh:5,fl:0, notes:'Si · Do♯ · Re♯ · Mi · Fa♯ · Sol♯ · La♯'},
+  {k:'Fa♯/Sol♭', sh:6,fl:6, notes:'Fa♯ · Sol♯ · La♯ · Si · Do♯ · Re♯ · Mi♯'},
+  {k:'Re♭',      sh:0,fl:5, notes:'Re♭ · Mi♭ · Fa · Sol♭ · La♭ · Si♭ · Do'},
+  {k:'La♭',      sh:0,fl:4, notes:'La♭ · Si♭ · Do · Re♭ · Mi♭ · Fa · Sol'},
+  {k:'Mi♭',      sh:0,fl:3, notes:'Mi♭ · Fa · Sol · La♭ · Si♭ · Do · Re'},
+  {k:'Si♭',      sh:0,fl:2, notes:'Si♭ · Do · Re · Mi♭ · Fa · Sol · La'},
+  {k:'Fa',       sh:0,fl:1, notes:'Fa · Sol · La · Si♭ · Do · Re · Mi'},
+];
+
+// Acordes de Do mayor — notas correctas
+// Do=0 Re=2 Mi=4 Fa=5 Sol=7 La=9 Si=11
+const CHORDS = [
+  {sym:'C',    es:'Do mayor',      notes:[0,4,7]},
+  {sym:'Dm',   es:'Re menor',      notes:[2,5,9]},
+  {sym:'Em',   es:'Mi menor',      notes:[4,7,11]},
+  {sym:'F',    es:'Fa mayor',      notes:[5,9,0]},   // Fa La Do
+  {sym:'G',    es:'Sol mayor',     notes:[7,11,2]},  // Sol Si Re
+  {sym:'Am',   es:'La menor',      notes:[9,0,4]},   // La Do Mi
+  {sym:'Bdim', es:'Si disminuido', notes:[11,2,5]},  // Si Re Fa
+];
+
+// ════════════════════════════════════════
+// PIANO BUILDER — 1 o 2 octavas
+// ════════════════════════════════════════
+// Genera el layout de N octavas. Teclas blancas fluyen en flex; negras tienen left absoluto.
+function genLayout(octaves) {
+  const WW = 44; // px por tecla blanca
+  const keys = [];
+  // posición left de cada tecla negra dentro de una octava (semitono -> offset)
+  const bPos = {1:30, 3:74, 6:162, 8:206, 10:250};
+  for (let o = 0; o < octaves; o++) {
+    const baseX = o * 7 * WW; // 7 blancas por octava
+    [0,2,4,5,7,9,11].forEach(s => keys.push({s: o*12+s, t:'w'}));
+    [1,3,6,8,10].forEach(s => keys.push({s: o*12+s, t:'b', l: baseX + bPos[s]}));
+  }
+  return keys;
+}
+const LAYOUT1 = genLayout(1);
+const LAYOUT2 = genLayout(2);
+
+function buildPiano(id, hlNotes, rootSemi, cb, twoOctaves) {
+  const wrap = document.getElementById(id);
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const layout = twoOctaves ? LAYOUT2 : LAYOUT1;
+  const totalW = (twoOctaves ? 2 : 1) * 7 * 44;
+  const inner = document.createElement('div');
+  inner.style.cssText = `display:flex;position:relative;height:128px;width:${totalW}px;margin:0 auto;filter:drop-shadow(0 5px 14px rgba(0,0,0,.28));`;
+
+  function makeKey(k) {
+    const el = document.createElement('div');
+    const isW = k.t === 'w';
+    el.className = 'key ' + (isW ? 'wk' : 'bk');
+    const semi12 = k.s % 12;
+    // Root: highlight raíz en AMBAS octavas
+    if (semi12 === rootSemi) el.classList.add('rt');
+    // Scale notes: highlight notas de la escala (excluyendo raíz)
+    else if (hlNotes && hlNotes.includes(semi12)) el.classList.add('hl');
+    if (!isW) { el.style.position='absolute'; el.style.left = k.l + 'px'; }
+    const lbl = document.createElement('span');
+    lbl.className = 'klbl'; lbl.textContent = ES[semi12];
+    el.appendChild(lbl);
+    if (cb) {
+      el.addEventListener('pointerdown', e => {
+        e.preventDefault(); el.classList.add('pl');
+        // Reproducir en octava correcta: 2ª octava suena una octava arriba (×2)
+        const oct = Math.floor(k.s / 12);
+        cb(semi12, oct);
+        setTimeout(() => el.classList.remove('pl'), 280);
+      });
+    }
+    return el;
+  }
+
+  layout.filter(k=>k.t==='w').forEach(k => inner.appendChild(makeKey(k)));
+  layout.filter(k=>k.t==='b').forEach(k => inner.appendChild(makeKey(k)));
+  wrap.appendChild(inner);
+}
+
+// ════════════════════════════════════════
+// I. MAIN PIANO
+// ════════════════════════════════════════
+buildPiano('piano-main', [], -1, (s, oct) => playN(s, 1.4, 0, oct));
+
+// ════════════════════════════════════════
+// II. INTERVALS
+// ════════════════════════════════════════
+const ig = document.getElementById('ig');
+IVDATA.forEach(iv => {
+  const c = document.createElement('div'); c.className = 'iv-card';
+  c.innerHTML = `<div class="iv-n">${iv.st}</div><div class="iv-name">${iv.name}</div><div class="iv-ex">${iv.ex}</div>`;
+  c.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    playN(0, 0.9);                          // Do raíz primero
+    playN(iv.st % 12, 1.4, 0.65);          // nota destino después de pausa
+  });
+  ig.appendChild(c);
+});
+
+// ════════════════════════════════════════
+// IV. SCALE BUILDER
+// ════════════════════════════════════════
+function buildScale(ri) {
+  const d = SCALES[ri];
+  const sfEl = document.getElementById('sf'); sfEl.innerHTML = '';
+  d.n.forEach((name, i) => {
+    const box = document.createElement('div'); box.className = 'sb';
+    const note = document.createElement('div');
+    note.className = 'sn' + (i===0?' sr':''); note.textContent = name;
+    const lbl = document.createElement('div'); lbl.className = 'sl';
+    lbl.textContent = i===0 ? 'Raíz' : (GAPS[i-1]===2?'T':'S');
+    box.appendChild(note); box.appendChild(lbl);
+    sfEl.appendChild(box);
+    if (i < d.n.length-1) {
+      const sp = document.createElement('div'); sp.className = 'ssp';
+      sp.textContent = GAPS[i]===2 ? '—T—' : '—S—';
+      sfEl.appendChild(sp);
+    }
+  });
+  const rootSemi = n2s(d.n[0]);
+  const semis = d.n.map(n2s);
+  buildPiano('piano-scale', semis.slice(1), rootSemi, (s, oct) => playN(s, 1.2, 0, oct), true);
+}
+
+const ss = document.getElementById('scale-sel');
+Object.keys(SCALES).forEach(i => {
+  const b = document.createElement('button'); b.className = 'rb' + (parseInt(i)===0?' act':'');
+  b.textContent = SCALES[i].root;
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.rb').forEach(x=>x.classList.remove('act'));
+    b.classList.add('act'); buildScale(parseInt(i));
+  });
+  ss.appendChild(b);
+});
+buildScale(0);
+
+// ════════════════════════════════════════
+// V. CIRCLE OF FIFTHS
+// ════════════════════════════════════════
+(function(){
+  const svg = document.getElementById('csvg');
+  const cx=150, cy=150, R=118;
+  const bg = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  bg.setAttribute('cx',cx);bg.setAttribute('cy',cy);bg.setAttribute('r',R+13);
+  bg.setAttribute('fill','#1a1209');bg.setAttribute('stroke','#c8963e');bg.setAttribute('stroke-width','1.5');
+  svg.appendChild(bg);
+
+  let aC=null, aT=null;
+
+  CIRCLE.forEach((item,i) => {
+    const ang = (i*30-90)*Math.PI/180;
+    const x = cx+R*Math.cos(ang), y = cy+R*Math.sin(ang);
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.style.cursor='pointer';
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',20);
+    c.setAttribute('fill',i===0?'#c8963e':'#2a1f14');
+    c.setAttribute('stroke','#c8963e');c.setAttribute('stroke-width',i===0?'2.5':'1');
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',x);t.setAttribute('y',y+1);
+    t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','middle');
+    t.setAttribute('font-family','DM Mono,monospace');
+    t.setAttribute('font-size',item.k.length>3?'7':'9');
+    t.setAttribute('fill',i===0?'#1a1209':'#e8d8b8');t.setAttribute('font-weight','500');
+    t.textContent=item.k;
+    if(i===0){aC=c;aT=t;}
+    g.appendChild(c);g.appendChild(t);
+    g.addEventListener('click',()=>{
+      if(aC){aC.setAttribute('fill','#2a1f14');aC.setAttribute('stroke-width','1');}
+      if(aT) aT.setAttribute('fill','#e8d8b8');
+      c.setAttribute('fill','#c8963e');c.setAttribute('stroke-width','2.5');
+      t.setAttribute('fill','#1a1209'); aC=c;aT=t;
+      document.getElementById('ck-name').textContent=item.k;
+      const acc=item.sh>0?`${item.sh} sostenido${item.sh>1?'s':''} (♯)`:item.fl>0?`${item.fl} bemol${item.fl>1?'es':''} (♭)`:'Sin alteraciones';
+      document.getElementById('ck-acc').textContent=acc;
+      document.getElementById('ck-notes').textContent=item.notes;
+    });
+    svg.appendChild(g);
+  });
+  const ct=document.createElementNS('http://www.w3.org/2000/svg','text');
+  ct.setAttribute('x',cx);ct.setAttribute('y',cy);ct.setAttribute('text-anchor','middle');
+  ct.setAttribute('dominant-baseline','middle');ct.setAttribute('font-family','DM Mono,monospace');
+  ct.setAttribute('font-size','7');ct.setAttribute('fill','#6b5840');ct.setAttribute('letter-spacing','1.5');
+  ct.textContent='5ª JUSTA'; svg.appendChild(ct);
+})();
+
+// ════════════════════════════════════════
+// VI. CHORDS
+// ════════════════════════════════════════
+const cg = document.getElementById('cg');
+CHORDS.forEach(ch => {
+  const card = document.createElement('div'); card.className = 'cc';
+  const pills = ch.notes.map((n,i)=>`<span class="pill${i===0?' r':''}">${ES[n%12]}</span>`).join('');
+  card.innerHTML = `<div class="cn">${ch.sym}</div><div class="ct">${ch.es}</div><div class="cp">${pills}</div>`;
+  card.addEventListener('pointerdown', e => {
+    e.preventDefault(); playChord(ch.notes, true);
+    card.style.borderColor='var(--gold)';
+    setTimeout(()=>card.style.borderColor='',900);
+  });
+  cg.appendChild(card);
+});
+
+// ════════════════════════════════════════
+// VII. CHORD NAME DECODERS — botones inline usan playChord() directamente
+// Csus4 → C resolution button
+// ════════════════════════════════════════
+const sus4Btn = document.getElementById('rbtn-sus4');
+if (sus4Btn) {
+  sus4Btn.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    playChord([0,5,7], true);                        // Csus4
+    setTimeout(() => playChord([0,4,7], true), 1400); // C major resolve
+  });
+}
+
+// ════════════════════════════════════════
+// SCROLL ANIMATIONS + NAV
+// ════════════════════════════════════════
+const secs   = document.querySelectorAll('section');
+const navAs  = document.querySelectorAll('nav a');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      const id = e.target.id;
+      navAs.forEach(a => a.classList.toggle('active', a.getAttribute('href')==='#'+id));
+    }
+  });
+}, { threshold:0.1 });
+secs.forEach(s => io.observe(s));
+navAs.forEach(a => a.addEventListener('click', e => {
+  e.preventDefault();
+  const t = document.querySelector(a.getAttribute('href'));
+  if(t) t.scrollIntoView({behavior:'smooth',block:'start'});
+}));
+</script>
+</body>
+</html>
